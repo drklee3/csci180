@@ -1,8 +1,9 @@
 \documentclass[12pt]{exam}
 \usepackage{enumitem}
+\usepackage[colorlinks]{hyperref}
 \usepackage{listings}
-\usepackage{xcolor}
 \usepackage{multicol}
+\usepackage{xcolor}
 
 \lstset{
     showstringspaces=false,
@@ -28,6 +29,11 @@ Modes used:
     \item Incremental (default)
     \item Incremental (charset with cracked passwords)
 \end{itemize}
+
+The given wordlist given was used along with a wordlist of top passwords found
+on GitHub at \href{https://github.com/danielmiessler/SecLists/tree/master/Passwords/Common-Credentials}{danielmiessler/SecLists}.
+
+\vspace*{.21in}
 
 \noindent
 Commands run that cracked passwords (with corresponding user passwords):
@@ -119,65 +125,69 @@ Commands with no cracked users or canceled due to excessive runtime:
 \end{lstlisting}
 
 \noindent
-Passwords cracked:
-\begin{multicols}{2}
+Passwords cracked (54 password hashes cracked, 46 left):
+\begin{multicols}{3}
     \begin{lstlisting}
-        user00:hashemi
-        user01:8ferret
-        user02:ruben6
-        user03:criminal16
-        user05:f00tba11
-        user06:dingding1
-        user07:goodday1
-        user09:babigirl1
-        user10:candy1992
-        user11:sunset15
-        user12:homedepot5
-        user13:riverside!
-        user14:butthead2
-        user15:motorhead1
-        user18:1mateo4
-        user19:1medical
-        user20:1memme
-        user28:1nothing1
-        user29:1nternet
-        user31:1onelove
-        user32:1orange
-        user36:1susan2
-        user39:1teddybear
-        user40:1texasboy
-        user46:1Vipers
-        user47:1webstar
-        user48:1westsider
-        user49:1winnie
-        user56:20013694
-        user57:2006acura
-        user65:20hopedale
-        user66:20inches
-        user67:20september
-        user69:210592w
-        user72:2123546a
-        user74:212head
-        user75:212sammyd
-        user79:maxx13
-        user84:a1234666
-        user85:21norway
-        user86:portinga
-        user87:casper
-        user88:badone
-        user89:lebanon1
-        user90:fildaman
-        user91:tacoma1
-        user92:brookstone
-        user93:knockers
-        user94:braindamage
-        user95:8661234
-        user96:iamadam
-        user97:smoesmoe
-        user98:qwertyui
-        user99:bubbles4
+    user00:hashemi
+    user01:8ferret
+    user02:ruben6
+    user03:criminal16
+    user05:f00tba11
+    user06:dingding1
+    user07:goodday1
+    user09:babigirl1
+    user10:candy1992
+    user11:sunset15
+    user12:homedepot5
+    user13:riverside!
+    user14:butthead2
+    user15:motorhead1
+    user18:1mateo4
+    user19:1medical
+    user20:1memme
+    user28:1nothing1
+    user29:1nternet
+    user31:1onelove
+    user32:1orange
+    user36:1susan2
+    user39:1teddybear
+    user40:1texasboy
+    user46:1Vipers
+    user47:1webstar
+    user48:1westsider
+    user49:1winnie
+    user56:20013694
+    user57:2006acura
+    user65:20hopedale
+    user66:20inches
+    user67:20september
+    user69:210592w
+    user72:2123546a
+    user74:212head
+    user75:212sammyd
+    user79:maxx13
+    user84:a1234666
+    user85:21norway
+    user86:portinga
+    user87:casper
+    user88:badone
+    user89:lebanon1
+    user90:fildaman
+    user91:tacoma1
+    user92:brookstone
+    user93:knockers
+    user94:braindamage
+    user95:8661234
+    user96:iamadam
+    user97:smoesmoe
+    user98:qwertyui
+    user99:bubbles4
     \end{lstlisting}
 \end{multicols}
+
+% leave rest of page blank
+\vspace*{\stretch{1}}
+\newpage
 
 \section{}
 
