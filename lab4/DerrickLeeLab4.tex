@@ -1,0 +1,179 @@
+\documentclass[12pt]{exam}
+\usepackage[colorlinks]{hyperref}
+\usepackage{enumitem}
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{multicol}
+\usepackage{xcolor}
+
+\graphicspath{ {./images/} }
+
+\lstset{
+    showstringspaces=false,
+    breaklines=true,
+    basicstyle=\footnotesize,
+    commentstyle=\color{gray}
+}
+
+\begin{document}
+\noindent
+Derrick Lee\\
+Lab 4\\
+CSCI 180\\
+\today\\
+
+\section{Part A: p1.pcap}
+
+\subsection{}
+
+The IP address of the network assigning IP addresses via DHCP is 192.168.56.1
+
+\subsection{}
+
+08:00:27:8F:4C:61 192.168.56.9 \\
+08:00:27:76:1F:7C 192.168.56.2 \\
+08:00:27:0C:66:53 192.168.56.3 \\
+
+\subsection{}
+
+[DOUBLE CHECK]
+
+192.168.56.9 did not receive their IP address from DHCP.
+192.168.56.2 and 192.168.56.3 sent DHCP requests from 0.0.0.0 to the
+broadcast address
+
+\subsection{}
+
+\begin{enumerate}[label=\alph*)]
+    \item These SYN packets were sent to seemingly random ports.  This could be
+    to check the target for ports that are open and listening for new
+    connections.
+    \item Between frames 120 and 2121, port 22 (used for SSH) responded with a
+    SYN, ACK. This gave information that the server is listening on port 22.
+    \item New information given between frames 2241 and 4250 is that port 80
+    (used for HTTP) is also open.
+    \item The packet that was returned was a SYN-ACK, which tells the client
+    that the server is listening on the port and is accepting connections,
+    attempting to process a TCP three way handshake.
+\end{enumerate}
+
+\subsection{}
+
+\begin{enumerate}[label=\alph*)]
+    \item ARP is used to translate IP addresses to MAC addresses.
+    \item 08:00:27:8F:4C:61 (192.168.56.9) is asking for the MAC address of
+    192.168.56.2 and 192.168.56.2.  08:00:27:76:1F:7C (192.168.56.2) and
+    08:00:27:0C:66:53 (192.168.56.3) respond with their respective MAC addresses.
+\end{enumerate}
+
+\subsection{}
+
+\begin{enumerate}[label=\alph*)]
+    \item ARP replies are valid without a request as a machine may need to
+    notify others when their IP changes.
+    \item These ARP replies are suspicious as they are not just assigning
+    different IP addresses to their MAC address, but also that the IP addresses
+    being assigned are already being used by other machines.
+    \item 192.168.56.3 (08:00:27:0C:66:53) and 192.168.56.2 (08:00:27:76:1F:7C)
+    are affected as their IP addresses are being redirected to point to the ARP
+    broadcaster's MAC address 08:00:27:8F:4C:61.  These replies are being sent
+    to these two affected machines so that IP to MAC translations between the
+    two point to the attacker instead of one another.
+
+\end{enumerate}
+
+\subsection{}
+
+\begin{enumerate}[label=\alph*)]
+    \item
+        MITM attack
+
+        xx.2 => 7C (real/client) => 61 (attacker)\\
+        xx.3 => 53 (real/server) => 61 (attacker)\\
+        xx.9 => 61 (real/attacker)\\
+
+        xx.2 (7C) tries to download a file from xx.3 (53).
+
+        xx.2 (7C) -HTTP GET-> xx.3 (61 / ATTACKER)
+
+        xx.2 (61 / ATTACKER) -TCP-> xx.3 (53) // GET request\\
+        xx.3 (53)            -TCP-> xx.2 (61 / ATTACKER) // GET response
+
+        xx.3 (61 / ATTACKER) -TCP-> xx.2 (7C) // forward to victim
+    \item Document media type is listed in the HTTP response Content-Type header
+    as application/pdf.
+    \item Since the document was forwarded to the victim, they would have been
+    able to receive the requested pdf file as expected and thus possibly not
+    notice that it was intercepted.
+\end{enumerate}
+
+\subsection{}
+
+One method to retrieve the file being downloaded is to export the 2 pdf files
+via \lstinline{File > Export Objects > HTTP}.  These files can't be opened
+individually since it's a single pdf split into two parts, so they are combined
+with the following command
+
+\begin{lstlisting}[language=bash]
+    cat DoD5200_1ph\(1\).pdf DoD5200_1ph\(2\).pdf > DoD5200_1ph.pdf
+\end{lstlisting}
+
+An alternative method is to reconstruct the file from the packet responses
+directly.  The required data is in the packets 4576 and 7860.  Then select the
+packet responses and exporting the bytes (reassembled TCP) directly via
+Wireshark or copy it as a hex stream and convert it to a binary file with the
+following command:
+
+\begin{lstlisting}[language=bash]
+    xxd -r -p input_file output_file
+\end{lstlisting}
+
+After this, we have two binary files that can be combined with the
+\lstinline{cat} command same as above.
+
+\begin{enumerate}[label=\alph*)]
+    \item This document was published April 1997.
+    \item The authority that issued this document is the DoD Directive 5200.1,
+    "Information Security Program," December 13, 1996
+    \item Page 25's title is Atomic Energy Information
+\end{enumerate}
+
+\section{Part B: p2.pcap}
+
+\subsection{}
+
+\begin{enumerate}[label=\alph*)]
+    \item Attacker's MAC address is \lstinline{08:00:27:21:05:17}
+    \item Attacker's real IP address is 192.168.1.38
+    \item Attacker is trying to impersonate 192.168.1.1 which is usually the
+    router.
+    \item The victim's IP is 192.168.1.247 as the ARP packets are being sent to
+    this machine.
+\end{enumerate}
+
+\subsection{}
+
+The user searched "\lstinline{weather 32303}" in Google.  In packet 162, the
+search query (\lstinline{q=weather+32303}, where space is encoded as a
+\lstinline{+}) is shown in the HTTP request where the search query is provided
+in a url parameter in the GET request.
+
+The full GET request URI is the following:
+
+\begin{lstlisting}
+    /search?hl=en&client=ubuntu&hs=Zgi&channel=fs&q=weather+32303&oq=weather+32303&gs_l=serp.3..0l2j0i30l2j0i5i30l3j0i8j0i8i30l2.44912.47718.0.48648.15.9.1.5.5.0.118.808.7j2.9.0.les%3B..0.0...1c.1.4.serp.hEw2INguST0
+\end{lstlisting}
+
+\subsection{}
+
+\begin{enumerate}[label=\alph*)]
+    \item The vim next visits www.paypal.com
+    \item The TLS response is sent to the attacker's machine (08:00:27:21:05:17)
+    so the handshake is between the website and the attacker.
+    \item The victim's username is \lstinline{TARGETUSER} and their password is
+    \lstinline{ILOVETHEINTERNET}.  This was found in the HTTP POST
+    application/x-www-form-urlencoded form data.  
+\end{enumerate}
+
+\end{document}
