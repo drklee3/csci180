@@ -31,17 +31,18 @@ The IP address of the network assigning IP addresses via DHCP is 192.168.56.1
 
 \subsection{}
 
-08:00:27:8F:4C:61 192.168.56.9 \\
-08:00:27:76:1F:7C 192.168.56.2 \\
-08:00:27:0C:66:53 192.168.56.3 \\
+\begin{lstlisting}
+08:00:27:8F:4C:61 192.168.56.9
+08:00:27:76:1F:7C 192.168.56.2
+08:00:27:0C:66:53 192.168.56.3
+\end{lstlisting}
 
 \subsection{}
 
-[DOUBLE CHECK]
-
-192.168.56.9 did not receive their IP address from DHCP.
-192.168.56.2 and 192.168.56.3 sent DHCP requests from 0.0.0.0 to the
-broadcast address
+No, 192.168.56.9 (108:00:27:8F:4C:61) did not receive their IP address from
+DHCP.\\
+192.168.56.2 and 192.168.56.3 had IP's assigned via DHCP as they sent DHCP
+requests from 0.0.0.0 to the broadcast address
 
 \subsection{}
 
@@ -55,7 +56,9 @@ broadcast address
     (used for HTTP) is also open.
     \item The packet that was returned was a SYN-ACK, which tells the client
     that the server is listening on the port and is accepting connections,
-    attempting to process a TCP three way handshake.
+    attempting to process a TCP three way handshake.  Other ports do not respond
+    with a SYN-ACK as they are not accepting connections and closed to external
+    machines.
 \end{enumerate}
 
 \subsection{}
@@ -63,8 +66,9 @@ broadcast address
 \begin{enumerate}[label=\alph*)]
     \item ARP is used to translate IP addresses to MAC addresses.
     \item 08:00:27:8F:4C:61 (192.168.56.9) is asking for the MAC address of
-    192.168.56.2 and 192.168.56.2.  08:00:27:76:1F:7C (192.168.56.2) and
-    08:00:27:0C:66:53 (192.168.56.3) respond with their respective MAC addresses.
+    192.168.56.2 and 192.168.56.3.  08:00:27:76:1F:7C (192.168.56.2) and
+    08:00:27:0C:66:53 (192.168.56.3) respond with their corresponding MAC
+    addresses.
 \end{enumerate}
 
 \subsection{}
@@ -80,29 +84,38 @@ broadcast address
     broadcaster's MAC address 08:00:27:8F:4C:61.  These replies are being sent
     to these two affected machines so that IP to MAC translations between the
     two point to the attacker instead of one another.
-
 \end{enumerate}
 
 \subsection{}
 
 \begin{enumerate}[label=\alph*)]
-    \item
-        MITM attack
+    \item The attacker was successful in executing a MITM attack.
 
-        xx.2 => 7C (real/client) => 61 (attacker)\\
-        xx.3 => 53 (real/server) => 61 (attacker)\\
-        xx.9 => 61 (real/attacker)\\
+    The corresponding machine MAC addresses (last octet) are listed for each IP
+    address (last two octets):
 
-        xx.2 (7C) tries to download a file from xx.3 (53).
+    \begin{lstlisting}
+    56.2 => 7C (real/client)
+         => 61 (attacker)
+    56.3 => 53 (real/server)
+         => 61 (attacker)
+    56.9 => 61 (real/attacker)
+    \end{lstlisting}
 
-        xx.2 (7C) -HTTP GET-> xx.3 (61 / ATTACKER)
+    Attacker machine is shown in bold.
 
-        xx.2 (61 / ATTACKER) -TCP-> xx.3 (53) // GET request\\
-        xx.3 (53)            -TCP-> xx.2 (61 / ATTACKER) // GET response
+    \begin{enumerate}[label=\arabic*)]
+        \item 56.2 (7C) tries to download a file from 56.3 (53).
+        \item 56.2 (7C) -HTTP GET-> 56.3 (\textbf{61}) -TCP-> 56.3 (53)
+        \item 56.3 (53) -TCP-> 56.2 (\textbf{61}) -TCP-> 56.2 (7C)
+    \end{enumerate}
 
-        xx.3 (61 / ATTACKER) -TCP-> xx.2 (7C) // forward to victim
+    The attacker intercepts connections between the victim 56.2 (7C) and the
+    server 56.3 (53), acting as a proxy in between the two to both pass along
+    request data and view (or potentially modify) the content.
+
     \item Document media type is listed in the HTTP response Content-Type header
-    as application/pdf.
+    as \lstinline{application/pdf}.
     \item Since the document was forwarded to the victim, they would have been
     able to receive the requested pdf file as expected and thus possibly not
     notice that it was intercepted.
@@ -113,14 +126,14 @@ broadcast address
 One method to retrieve the file being downloaded is to export the 2 pdf files
 via \lstinline{File > Export Objects > HTTP}.  These files can't be opened
 individually since it's a single pdf split into two parts, so they are combined
-with the following command
+with the following command with \lstinline{cat}:
 
 \begin{lstlisting}[language=bash]
     cat DoD5200_1ph\(1\).pdf DoD5200_1ph\(2\).pdf > DoD5200_1ph.pdf
 \end{lstlisting}
 
 An alternative method is to reconstruct the file from the packet responses
-directly.  The required data is in the packets 4576 and 7860.  Then select the
+directly with the required data in packets 4576 and 7860.  Then select the
 packet responses and exporting the bytes (reassembled TCP) directly via
 Wireshark or copy it as a hex stream and convert it to a binary file with the
 following command:
@@ -136,7 +149,7 @@ After this, we have two binary files that can be combined with the
     \item This document was published April 1997.
     \item The authority that issued this document is the DoD Directive 5200.1,
     "Information Security Program," December 13, 1996
-    \item Page 25's title is Atomic Energy Information
+    \item Page 25's title is "Atomic Energy Information"
 \end{enumerate}
 
 \section{Part B: p2.pcap}
@@ -144,8 +157,8 @@ After this, we have two binary files that can be combined with the
 \subsection{}
 
 \begin{enumerate}[label=\alph*)]
-    \item Attacker's MAC address is \lstinline{08:00:27:21:05:17}
-    \item Attacker's real IP address is 192.168.1.38
+    \item Attacker's MAC address is \lstinline{08:00:27:21:05:17}.
+    \item Attacker's real IP address is 192.168.1.38.
     \item Attacker is trying to impersonate 192.168.1.1 which is usually the
     router.
     \item The victim's IP is 192.168.1.247 as the ARP packets are being sent to
@@ -168,7 +181,7 @@ The full GET request URI is the following:
 \subsection{}
 
 \begin{enumerate}[label=\alph*)]
-    \item The vim next visits www.paypal.com
+    \item The victim next visits www.paypal.com
     \item The TLS response is sent to the attacker's machine (08:00:27:21:05:17)
     so the handshake is between the website and the attacker.
     \item The victim's username is \lstinline{TARGETUSER} and their password is
