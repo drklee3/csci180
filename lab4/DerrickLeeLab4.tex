@@ -107,7 +107,9 @@ requests from 0.0.0.0 to the broadcast address
     \begin{enumerate}[label=\arabic*)]
         \item 56.2 (7C) tries to download a file from 56.3 (53).
         \item 56.2 (7C) -HTTP GET-> 56.3 (\textbf{61}) -TCP-> 56.3 (53)
-        \item 56.3 (53) -TCP-> 56.2 (\textbf{61}) -TCP-> 56.2 (7C)
+        (forwarded GET request)
+        \item 56.3 (53) -TCP-> 56.2 (\textbf{61}) -TCP-> 56.2 (7C) (forwarded
+        GET response)
     \end{enumerate}
 
     The attacker intercepts connections between the victim 56.2 (7C) and the
